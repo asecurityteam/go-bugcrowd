@@ -2,14 +2,19 @@ package bugcrowd
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"net/http"
 	"path"
 )
 
+const (
+	getBountiesEndpoint = "/bounties"
+)
+
 type BugcrowdBountyAPI interface {
-	GetBounties(ctx context.Context) error
+	GetBounties(ctx context.Context) ([]Bounty, error)
 }
 
 type BountyService struct {
@@ -23,30 +28,31 @@ type Bounty struct {
 	Status     string
 }
 
-func (b *BountyService) GetBounties() error {
-	endpoint := "/bounties"
+// GetBounties retrieves all bounty information from Bugcrowd that the you have access
+func (b *BountyService) GetBounties() ([]Bounty, error) {
 	u := b.Client.BaseURL
-	u.Path = path.Join(u.Path, endpoint)
+	u.Path = path.Join(u.Path, getBountiesEndpoint)
 	req, _ := http.NewRequest(http.MethodGet, u.String(), http.NoBody)
-
 	req.Header.Set("Accept", "application/vnd.bugcrowd+json")
+	req.SetBasicAuth(b.Client.token.Username, b.Client.token.Password)
 
-	resp, err := b.Client.Http.Do(req)
+	resp, err := b.Client.http.Do(req)
 	if err != nil {
-		return err
+		return nil, err
 	}
 	defer resp.Body.Close()
 
 	if resp.StatusCode != 200 {
-		return fmt.Errorf("Jira returned non 200: %d", resp.StatusCode)
+		return []Bounty{}, fmt.Errorf("BugCrowd returned non 200: %d", resp.StatusCode)
 	}
 
 	body, err := ioutil.ReadAll(resp.Body)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
-	fmt.Println(string(body))
+	var bounties []Bounty
+	json.Unmarshal(body, &bounties)
 
-	return nil
+	return bounties, nil
 }

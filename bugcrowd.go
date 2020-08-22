@@ -11,25 +11,31 @@ const (
 
 // Client represents the basic struct for the Bugcrowd client
 type Client struct {
-	Auth    Authentication
 	BaseURL *url.URL
 	Bounty  *BountyService
-	Http    *http.Client
+
+	http  *http.Client
+	token BasicAuth
 }
 
 // NewClient generates a new client to make outgoing calls to Bugcrowd
-func NewClient() (*Client, error) {
+func NewClient(auth BasicAuth) (*Client, error) {
 	parsedBaseURL, err := url.Parse(baseURL)
 	if err != nil {
 		return nil, err
 	}
 
 	c := &Client{
-		Auth:    Authentication{},
 		BaseURL: parsedBaseURL,
-		Http:    http.DefaultClient,
+		http:    http.DefaultClient,
+		token:   auth,
 	}
 	c.Bounty = &BountyService{Client: c}
 
 	return c, nil
+}
+
+type BasicAuth struct {
+	Username string
+	Password string
 }
