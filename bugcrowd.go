@@ -35,6 +35,7 @@ func NewClient(auth BasicAuth) (*Client, error) {
 	return c, nil
 }
 
+// BasicAuth forms basic auth to be passed in client creation to Auth to Bugcrowd
 type BasicAuth struct {
 	Username string
 	Password string
