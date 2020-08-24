@@ -76,7 +76,7 @@ func (b *BountyService) GetBounties() (GetBountiesResponse, error) {
 
 	req, _ := http.NewRequest(http.MethodGet, u.String(), http.NoBody)
 	req.Header.Set("Accept", "application/vnd.bugcrowd+json")
-	req.SetBasicAuth(b.Client.token.Username, b.Client.token.Password)
+	req.SetBasicAuth(b.Client.auth.Username, b.Client.auth.Password)
 
 	resp, err := b.Client.http.Do(req)
 	if err != nil {
@@ -107,7 +107,7 @@ func (b *BountyService) RetrieveBounty(uuid string) (RetrieveBountyResponse, err
 
 	req, _ := http.NewRequest(http.MethodGet, u.String(), http.NoBody)
 	req.Header.Set("Accept", "application/vnd.bugcrowd+json")
-	req.SetBasicAuth(b.Client.token.Username, b.Client.token.Password)
+	req.SetBasicAuth(b.Client.auth.Username, b.Client.auth.Password)
 
 	resp, err := b.Client.http.Do(req)
 	if err != nil {

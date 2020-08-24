@@ -14,8 +14,8 @@ type Client struct {
 	BaseURL *url.URL
 	Bounty  *BountyService
 
-	http  *http.Client
-	token BasicAuth
+	http *http.Client
+	auth BasicAuth
 }
 
 // NewClient generates a new client to make outgoing calls to Bugcrowd
@@ -28,7 +28,7 @@ func NewClient(auth BasicAuth) (*Client, error) {
 	c := &Client{
 		BaseURL: parsedBaseURL,
 		http:    http.DefaultClient,
-		token:   auth,
+		auth:    auth,
 	}
 	c.Bounty = &BountyService{Client: c}
 
