@@ -25,6 +25,15 @@ type BountyService struct {
 	Client *Client
 }
 
+type GetBountiesRequestConfig struct {
+	QueryParams GetBountiesRequestQueryParams
+}
+
+type GetBountiesRequestQueryParams struct {
+	Limit  string
+	Offset string
+}
+
 // GetBountiesResponse is the wrapper object returned by Bugcrowd in its GetBounty response
 type GetBountiesResponse struct {
 	Bounties []Bounty `json:"bounties,omitempty"`
@@ -70,13 +79,18 @@ type Organization struct {
 }
 
 // GetBounties retrieves all bounty information from Bugcrowd that the you have access
-func (b *BountyService) GetBounties() (GetBountiesResponse, error) {
+func (b *BountyService) GetBounties(requestConfig GetBountiesRequestConfig) (GetBountiesResponse, error) {
 	u, _ := url.Parse(b.Client.BaseURL.String())
 	u.Path = path.Join(u.Path, getBountiesEndpoint)
 
 	req, _ := http.NewRequest(http.MethodGet, u.String(), http.NoBody)
 	req.Header.Set("Accept", "application/vnd.bugcrowd+json")
 	req.SetBasicAuth(b.Client.auth.Username, b.Client.auth.Password)
+
+	q := req.URL.Query()
+	q.Add("limit", requestConfig.QueryParams.Limit)
+	q.Add("offset", requestConfig.QueryParams.Offsets)
+	req.URL.RawQuery = q.Encode()
 
 	resp, err := b.Client.http.Do(req)
 	if err != nil {
