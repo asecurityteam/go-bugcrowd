@@ -21,14 +21,17 @@ type BountyAPI interface {
 	RetrieveBounty(uuid string) (RetrieveBountyResponse, error)
 }
 
+// BountyService test
 type BountyService struct {
 	Client *Client
 }
 
+// GetBountiesRequestConfig test
 type GetBountiesRequestConfig struct {
 	QueryParams GetBountiesRequestQueryParams
 }
 
+// GetBountiesRequestQueryParams test
 type GetBountiesRequestQueryParams struct {
 	Limit  string
 	Offset string
@@ -39,10 +42,12 @@ type GetBountiesResponse struct {
 	Bounties []Bounty `json:"bounties,omitempty"`
 }
 
+// RetrieveBountyResponse test
 type RetrieveBountyResponse struct {
 	Bounty Bounty `json:"bounty,omitempty"`
 }
 
+// Bounty test
 type Bounty struct {
 	UUID                    string             `json:"uuid,omitempty"`
 	BountyType              string             `json:"bountytype,omitempty"`
@@ -89,7 +94,7 @@ func (b *BountyService) GetBounties(requestConfig GetBountiesRequestConfig) (Get
 
 	q := req.URL.Query()
 	q.Add("limit", requestConfig.QueryParams.Limit)
-	q.Add("offset", requestConfig.QueryParams.Offsets)
+	q.Add("offset", requestConfig.QueryParams.Offset)
 	req.URL.RawQuery = q.Encode()
 
 	resp, err := b.Client.http.Do(req)
