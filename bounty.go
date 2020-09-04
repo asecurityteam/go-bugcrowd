@@ -71,12 +71,6 @@ type Bounty struct {
 	Organization            Organization       `json:"organization,omitempty"`
 }
 
-// CustomFieldLabel represents any custom fields put into a bounty
-type CustomFieldLabel struct {
-	FieldID   string `json:"field_id,omitempty"`
-	FieldName string `json:"field_name,omitempty"`
-}
-
 // Organization represents the organization a given bounty belongs.
 type Organization struct {
 	UUID string `json:"uuid,omitempty"`
