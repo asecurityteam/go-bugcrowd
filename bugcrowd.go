@@ -18,6 +18,12 @@ type Client struct {
 	auth BasicAuth
 }
 
+// BasicAuth forms basic auth to be passed in client creation to Auth to Bugcrowd
+type BasicAuth struct {
+	Username string
+	Password string
+}
+
 // NewClient generates a new client to make outgoing calls to Bugcrowd
 func NewClient(auth BasicAuth) (*Client, error) {
 	parsedBaseURL, err := url.Parse(baseURL)
@@ -33,10 +39,4 @@ func NewClient(auth BasicAuth) (*Client, error) {
 	c.Bounty = &BountyService{Client: c}
 
 	return c, nil
-}
-
-// BasicAuth forms basic auth to be passed in client creation to Auth to Bugcrowd
-type BasicAuth struct {
-	Username string
-	Password string
 }
