@@ -82,9 +82,7 @@ func (b *BountyService) GetBounties(requestConfig GetBountiesRequestConfig) (Get
 	u, _ := url.Parse(b.Client.BaseURL.String())
 	u.Path = path.Join(u.Path, getBountiesEndpoint)
 
-	req, _ := http.NewRequest(http.MethodGet, u.String(), http.NoBody)
-	req.Header.Set("Accept", "application/vnd.bugcrowd+json")
-	req.SetBasicAuth(b.Client.auth.Username, b.Client.auth.Password)
+	req, err := b.Client.NewRequest(http.MethodGet, u.String(), http.NoBody)
 
 	q := req.URL.Query()
 	q.Add("limit", requestConfig.QueryParams.Limit)
@@ -118,9 +116,7 @@ func (b *BountyService) RetrieveBounty(uuid string) (RetrieveBountyResponse, err
 	u, _ := url.Parse(b.Client.BaseURL.String())
 	u.Path = path.Join(u.Path, retrieveBountyEndpoint, uuid)
 
-	req, _ := http.NewRequest(http.MethodGet, u.String(), http.NoBody)
-	req.Header.Set("Accept", "application/vnd.bugcrowd+json")
-	req.SetBasicAuth(b.Client.auth.Username, b.Client.auth.Password)
+	req, _ := b.Client.NewRequest(http.MethodGet, u.String(), http.NoBody)
 
 	resp, err := b.Client.http.Do(req)
 	if err != nil {
