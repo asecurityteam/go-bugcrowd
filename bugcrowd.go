@@ -1,7 +1,6 @@
 package bugcrowd
 
 import (
-	"io"
 	"net/http"
 	"net/url"
 )
@@ -34,24 +33,24 @@ func NewClient(auth BasicAuth) (*Client, error) {
 
 	c := &Client{
 		BaseURL: parsedBaseURL,
-		http:    http.DefaultClient,
+		http:    NewTransport(auth),
 		auth:    auth,
 	}
-	c.Bounty = &BountyService{Client: c}
+	c.Bounty = &BountyService{client: c}
 
 	return c, nil
 }
 
 // NewRequest Creates a new http.Request object with the basic headers/auth required to communicate
 // with bugcrowd
-func (c *Client) NewRequest(method, url string, payload io.Reader) (*http.Request, error) {
-	req, err := http.NewRequest(method, url, payload)
-	if err != nil {
-		return nil, err
-	}
+// func (c *Client) NewRequest(method, url string, payload io.Reader) (*http.Request, error) {
+// 	req, err := http.NewRequest(method, url, payload)
+// 	if err != nil {
+// 		return nil, err
+// 	}
 
-	req.Header.Set("Accept", "application/vnd.bugcrowd+json")
-	req.SetBasicAuth(c.auth.Username, c.auth.Password)
+// 	req.Header.Set("Accept", "application/vnd.bugcrowd+json")
+// 	req.SetBasicAuth(c.auth.Username, c.auth.Password)
 
-	return req, nil
-}
+// 	return req, nil
+// }

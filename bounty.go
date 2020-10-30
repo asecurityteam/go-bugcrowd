@@ -11,19 +11,18 @@ import (
 )
 
 const (
-	getBountiesEndpoint    = "/bounties"
-	retrieveBountyEndpoint = "/bounties"
+	commonBountiesEndpoint = "/bounties"
 )
 
 // BountyAPI is the interface used for mocking of Bounty API calls
 type BountyAPI interface {
-	GetBounties() ([]Bounty, error)
+	GetBounties(requestConfig GetBountiesRequestConfig) (GetBountiesResponse, error)
 	RetrieveBounty(uuid string) (RetrieveBountyResponse, error)
 }
 
 // BountyService test
 type BountyService struct {
-	Client *Client
+	client *Client
 }
 
 // GetBountiesRequestConfig test
@@ -79,17 +78,19 @@ type Organization struct {
 
 // GetBounties retrieves all bounty information from Bugcrowd that the you have access
 func (b *BountyService) GetBounties(requestConfig GetBountiesRequestConfig) (GetBountiesResponse, error) {
-	u, _ := url.Parse(b.Client.BaseURL.String())
-	u.Path = path.Join(u.Path, getBountiesEndpoint)
+	u, _ := url.Parse(b.client.BaseURL.String())
+	u.Path = path.Join(u.Path, commonBountiesEndpoint)
 
-	req, err := b.Client.NewRequest(http.MethodGet, u.String(), http.NoBody)
+	req, err := http.NewRequest(http.MethodGet, u.String(), http.NoBody)
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("Accept", "application/vnd.bugcrowd+json")
 
 	q := req.URL.Query()
 	q.Add("limit", requestConfig.QueryParams.Limit)
 	q.Add("offset", requestConfig.QueryParams.Offset)
 	req.URL.RawQuery = q.Encode()
 
-	resp, err := b.Client.http.Do(req)
+	resp, err := b.client.http.Do(req)
 	if err != nil {
 		return GetBountiesResponse{}, err
 	}
@@ -113,12 +114,12 @@ func (b *BountyService) GetBounties(requestConfig GetBountiesRequestConfig) (Get
 // RetrieveBounty retrieves bounty with the given UUID
 // If bounty with given ID is not found, an empty response will be returned with a nil error
 func (b *BountyService) RetrieveBounty(uuid string) (RetrieveBountyResponse, error) {
-	u, _ := url.Parse(b.Client.BaseURL.String())
-	u.Path = path.Join(u.Path, retrieveBountyEndpoint, uuid)
+	u, _ := url.Parse(b.client.BaseURL.String())
+	u.Path = path.Join(u.Path, commonBountiesEndpoint, uuid)
 
-	req, _ := b.Client.NewRequest(http.MethodGet, u.String(), http.NoBody)
+	req, _ := http.NewRequest(http.MethodGet, u.String(), http.NoBody)
 
-	resp, err := b.Client.http.Do(req)
+	resp, err := b.client.http.Do(req)
 	if err != nil {
 		return RetrieveBountyResponse{}, err
 	}
