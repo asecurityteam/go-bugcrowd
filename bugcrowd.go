@@ -11,9 +11,8 @@ const (
 
 // Client represents the basic struct for the Bugcrowd client
 type Client struct {
-	BaseURL    *url.URL
-	Bounty     *BountyService
-	Attachment *AttachmentService
+	BaseURL *url.URL
+	Bounty  BountyAPI
 
 	http *http.Client
 	auth BasicAuth
@@ -38,21 +37,6 @@ func NewClient(auth BasicAuth) (*Client, error) {
 		auth:    auth,
 	}
 	c.Bounty = &BountyService{client: c}
-	c.Attachment = &AttachmentService{client: c}
 
 	return c, nil
 }
-
-// NewRequest Creates a new http.Request object with the basic headers/auth required to communicate
-// with bugcrowd
-// func (c *Client) NewRequest(method, url string, payload io.Reader) (*http.Request, error) {
-// 	req, err := http.NewRequest(method, url, payload)
-// 	if err != nil {
-// 		return nil, err
-// 	}
-
-// 	req.Header.Set("Accept", "application/vnd.bugcrowd+json")
-// 	req.SetBasicAuth(c.auth.Username, c.auth.Password)
-
-// 	return req, nil
-// }

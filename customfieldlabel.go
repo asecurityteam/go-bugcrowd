@@ -1,14 +1,5 @@
 package bugcrowd
 
-import (
-	"encoding/json"
-	"fmt"
-	"io/ioutil"
-	"net/http"
-	"net/url"
-	"path"
-)
-
 const (
 	customFieldLabelEndpoint = "/bounties/%s/custom_field_labels"
 )
@@ -38,31 +29,31 @@ type GetCustomFieldLabelsResponse struct {
 }
 
 // GetCustomFieldLabels test
-func (c *CustomFieldLabelService) GetCustomFieldLabels(uuid string) (GetCustomFieldLabelsResponse, error) {
-	u, _ := url.Parse(c.Client.BaseURL.String())
-	u.Path = path.Join(u.Path, customFieldLabelEndpoint)
+// func (c *CustomFieldLabelService) GetCustomFieldLabels(uuid string) (GetCustomFieldLabelsResponse, error) {
+// 	u, _ := url.Parse(c.Client.BaseURL.String())
+// 	u.Path = path.Join(u.Path, customFieldLabelEndpoint)
 
-	req, _ := http.NewRequest(http.MethodGet, u.String(), http.NoBody)
-	req.Header.Set("Accept", "application/vnd.bugcrowd+json")
-	req.SetBasicAuth(c.Client.auth.Username, c.Client.auth.Password)
+// 	req, _ := http.NewRequest(http.MethodGet, u.String(), http.NoBody)
+// 	req.Header.Set("Accept", "application/vnd.bugcrowd+json")
+// 	req.SetBasicAuth(c.Client.auth.Username, c.Client.auth.Password)
 
-	resp, err := c.Client.http.Do(req)
-	if err != nil {
-		return GetCustomFieldLabelsResponse{}, err
-	}
-	defer resp.Body.Close()
+// 	resp, err := c.Client.http.Do(req)
+// 	if err != nil {
+// 		return GetCustomFieldLabelsResponse{}, err
+// 	}
+// 	defer resp.Body.Close()
 
-	if resp.StatusCode != 200 {
-		return GetCustomFieldLabelsResponse{}, fmt.Errorf("BugCrowd returned non 200: %d", resp.StatusCode)
-	}
+// 	if resp.StatusCode != 200 {
+// 		return GetCustomFieldLabelsResponse{}, fmt.Errorf("BugCrowd returned non 200: %d", resp.StatusCode)
+// 	}
 
-	body, err := ioutil.ReadAll(resp.Body)
-	if err != nil {
-		return GetCustomFieldLabelsResponse{}, err
-	}
+// 	body, err := ioutil.ReadAll(resp.Body)
+// 	if err != nil {
+// 		return GetCustomFieldLabelsResponse{}, err
+// 	}
 
-	var customFieldLabels GetCustomFieldLabelsResponse
-	json.Unmarshal(body, &customFieldLabels)
+// 	var customFieldLabels GetCustomFieldLabelsResponse
+// 	json.Unmarshal(body, &customFieldLabels)
 
-	return customFieldLabels, nil
-}
+// 	return customFieldLabels, nil
+// }

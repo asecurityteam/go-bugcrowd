@@ -118,6 +118,8 @@ func (b *BountyService) RetrieveBounty(uuid string) (RetrieveBountyResponse, err
 	u.Path = path.Join(u.Path, commonBountiesEndpoint, uuid)
 
 	req, _ := http.NewRequest(http.MethodGet, u.String(), http.NoBody)
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("Accept", "application/vnd.bugcrowd+json")
 
 	resp, err := b.client.http.Do(req)
 	if err != nil {
