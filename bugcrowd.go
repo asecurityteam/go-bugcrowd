@@ -11,8 +11,9 @@ const (
 
 // Client represents the basic struct for the Bugcrowd client
 type Client struct {
-	BaseURL *url.URL
-	Bounty  *BountyService
+	BaseURL    *url.URL
+	Bounty     *BountyService
+	Attachment *AttachmentService
 
 	http *http.Client
 	auth BasicAuth
@@ -37,6 +38,7 @@ func NewClient(auth BasicAuth) (*Client, error) {
 		auth:    auth,
 	}
 	c.Bounty = &BountyService{client: c}
+	c.Attachment = &AttachmentService{client: c}
 
 	return c, nil
 }
