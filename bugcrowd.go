@@ -15,7 +15,6 @@ type Client struct {
 	Bounty  BountyAPI
 
 	http *http.Client
-	auth BasicAuth
 }
 
 // BasicAuth forms basic auth to be passed in client creation to Auth to Bugcrowd
@@ -34,7 +33,6 @@ func NewClient(auth BasicAuth) (*Client, error) {
 	c := &Client{
 		BaseURL: parsedBaseURL,
 		http:    NewTransport(auth),
-		auth:    auth,
 	}
 	c.Bounty = &BountyService{client: c}
 
