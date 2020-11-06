@@ -11,8 +11,9 @@ const (
 
 // Client represents the basic struct for the Bugcrowd client
 type Client struct {
-	BaseURL *url.URL
-	Bounty  BountyAPI
+	BaseURL          *url.URL
+	Bounty           BountyAPI
+	CustomFieldLabel CustomFieldLabelAPI
 
 	http *http.Client
 }
@@ -34,7 +35,9 @@ func NewClient(auth BasicAuth) (*Client, error) {
 		BaseURL: parsedBaseURL,
 		http:    NewTransport(auth),
 	}
+
 	c.Bounty = &BountyService{client: c}
+	c.CustomFieldLabel = &CustomFieldLabelService{client: c}
 
 	return c, nil
 }
