@@ -2,6 +2,7 @@ package bugcrowd
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"errors"
 	"fmt"
@@ -33,11 +34,8 @@ func TestGetBounties(t *testing.T) {
 	mockRT := NewMockRoundTripper(ctrl)
 	u, _ := url.Parse("http://localhost")
 
-	mockBountyService := NewMockBountyAPI(ctrl)
-
 	client := Client{
 		BaseURL: u,
-		Bounty:  mockBountyService,
 
 		http: &http.Client{Transport: mockRT},
 	}
@@ -90,22 +88,14 @@ func TestGetBounties(t *testing.T) {
 			responseErr: nil,
 			expectErr:   true,
 		},
-		{
-			name: "failure unmarshalling",
-			response: &http.Response{
-				Body:       ioutil.NopCloser(respReader),
-				StatusCode: http.StatusCreated,
-			},
-			responseErr: nil,
-			expectErr:   true,
-		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			ctx := context.Background()
 			mockRT.EXPECT().RoundTrip(gomock.Any()).Return(tt.response, tt.responseErr)
-			// mockBountyService.EXPECT().GetBounties(gomock.Any())
-			_, err := bountyService.GetBounties(GetBountiesRequestConfig{})
+
+			_, _, err := bountyService.GetBounties(ctx, GetBountiesRequestConfig{})
 			if tt.expectErr {
 				require.Error(t, err)
 				return
@@ -122,11 +112,8 @@ func TestRetrieveBounty(t *testing.T) {
 	mockRT := NewMockRoundTripper(ctrl)
 	u, _ := url.Parse("http://localhost")
 
-	mockBountyService := NewMockBountyAPI(ctrl)
-
 	client := Client{
 		BaseURL: u,
-		Bounty:  mockBountyService,
 
 		http: &http.Client{Transport: mockRT},
 	}
@@ -179,22 +166,14 @@ func TestRetrieveBounty(t *testing.T) {
 			responseErr: nil,
 			expectErr:   true,
 		},
-		{
-			name: "failure unmarshalling",
-			response: &http.Response{
-				Body:       ioutil.NopCloser(respReader),
-				StatusCode: http.StatusCreated,
-			},
-			responseErr: nil,
-			expectErr:   true,
-		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
+			ctx := context.Background()
 			mockRT.EXPECT().RoundTrip(gomock.Any()).Return(tt.response, tt.responseErr)
-			// mockBountyService.EXPECT().GetBounties(gomock.Any())
-			_, err := bountyService.RetrieveBounty("any")
+
+			_, _, err := bountyService.RetrieveBounty(ctx, "any")
 			if tt.expectErr {
 				require.Error(t, err)
 				return

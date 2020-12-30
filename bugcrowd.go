@@ -64,7 +64,7 @@ func (c *Client) Do(ctx context.Context, r *http.Request, b interface{}) (*http.
 	defer resp.Body.Close()
 
 	if resp.StatusCode < 200 || resp.StatusCode > 299 {
-		return resp, err
+		return resp, errors.New("Returned non-200")
 	}
 
 	// check if b is null as interface as nullable when passed
