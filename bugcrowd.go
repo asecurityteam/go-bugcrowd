@@ -52,15 +52,20 @@ func NewClient(auth BasicAuth) (*Client, error) {
 	return c, nil
 }
 
+// DoWithDefault wraps a call around Do that adds the default Bugcrowd headers
+func (c *Client) DoWithDefault(ctx context.Context, r *http.Request, b interface{}) (*http.Response, error) {
+	r.Header.Set("Content-Type", "application/json")
+	r.Header.Set("Accept", bugcrowdJSONAccept)
+
+	return c.Do(ctx, r, b)
+}
+
 // Do executes the passed in request and sets default headers to the request
 func (c *Client) Do(ctx context.Context, r *http.Request, b interface{}) (*http.Response, error) {
 	if ctx == nil {
 		return nil, errors.New("must pass a non-nil context")
 	}
 	r = r.WithContext(ctx)
-
-	r.Header.Set("Content-Type", "application/json")
-	r.Header.Set("Accept", bugcrowdJSONAccept)
 
 	resp, err := c.http.Do(r)
 	if err != nil {

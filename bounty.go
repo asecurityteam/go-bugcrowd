@@ -81,7 +81,7 @@ func (b *BountyService) GetBounties(ctx context.Context, requestOptions *GetBoun
 	req, err := http.NewRequest(http.MethodGet, u.String(), http.NoBody)
 
 	bounties := new(GetBountiesResponse)
-	resp, err := b.client.Do(ctx, req, bounties)
+	resp, err := b.client.DoWithDefault(ctx, req, bounties)
 	if err != nil {
 		return resp, &GetBountiesResponse{}, err
 	}
@@ -96,11 +96,9 @@ func (b *BountyService) RetrieveBounty(ctx context.Context, uuid string) (*http.
 	u.Path = path.Join(u.Path, commonBountiesEndpoint, uuid)
 
 	req, _ := http.NewRequest(http.MethodGet, u.String(), http.NoBody)
-	req.Header.Set("Content-Type", "application/json")
-	req.Header.Set("Accept", bugcrowdJSONAccept)
 
 	bounty := new(RetrieveBountyResponse)
-	resp, err := b.client.Do(ctx, req, bounty)
+	resp, err := b.client.DoWithDefault(ctx, req, bounty)
 	if err != nil {
 		return resp, &RetrieveBountyResponse{}, err
 	}
