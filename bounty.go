@@ -34,7 +34,7 @@ type GetBountiesResponse struct {
 	Bounties []*Bounty `json:"bounties,omitempty"`
 }
 
-// RetrieveBountyResponse test
+// RetrieveBountyResponse represents the body of the response from the Retrieve Bounty endpoint
 type RetrieveBountyResponse struct {
 	Bounty *Bounty `json:"bounty,omitempty"`
 }
