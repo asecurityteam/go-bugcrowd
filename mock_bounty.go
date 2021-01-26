@@ -5,6 +5,8 @@
 package bugcrowd
 
 import (
+	context "context"
+	http "net/http"
 	reflect "reflect"
 
 	gomock "github.com/golang/mock/gomock"
@@ -34,31 +36,33 @@ func (m *MockBountyAPI) EXPECT() *MockBountyAPIMockRecorder {
 }
 
 // GetBounties mocks base method
-func (m *MockBountyAPI) GetBounties(requestConfig GetBountiesRequestConfig) (GetBountiesResponse, error) {
+func (m *MockBountyAPI) GetBounties(ctx context.Context, requestConfig *GetBountiesOptions) (*http.Response, *GetBountiesResponse, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetBounties", requestConfig)
-	ret0, _ := ret[0].(GetBountiesResponse)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
+	ret := m.ctrl.Call(m, "GetBounties", ctx, requestConfig)
+	ret0, _ := ret[0].(*http.Response)
+	ret1, _ := ret[1].(*GetBountiesResponse)
+	ret2, _ := ret[2].(error)
+	return ret0, ret1, ret2
 }
 
 // GetBounties indicates an expected call of GetBounties
-func (mr *MockBountyAPIMockRecorder) GetBounties(requestConfig interface{}) *gomock.Call {
+func (mr *MockBountyAPIMockRecorder) GetBounties(ctx, requestConfig interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetBounties", reflect.TypeOf((*MockBountyAPI)(nil).GetBounties), requestConfig)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetBounties", reflect.TypeOf((*MockBountyAPI)(nil).GetBounties), ctx, requestConfig)
 }
 
 // RetrieveBounty mocks base method
-func (m *MockBountyAPI) RetrieveBounty(uuid string) (RetrieveBountyResponse, error) {
+func (m *MockBountyAPI) RetrieveBounty(ctx context.Context, uuid string) (*http.Response, *RetrieveBountyResponse, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "RetrieveBounty", uuid)
-	ret0, _ := ret[0].(RetrieveBountyResponse)
-	ret1, _ := ret[1].(error)
-	return ret0, ret1
+	ret := m.ctrl.Call(m, "RetrieveBounty", ctx, uuid)
+	ret0, _ := ret[0].(*http.Response)
+	ret1, _ := ret[1].(*RetrieveBountyResponse)
+	ret2, _ := ret[2].(error)
+	return ret0, ret1, ret2
 }
 
 // RetrieveBounty indicates an expected call of RetrieveBounty
-func (mr *MockBountyAPIMockRecorder) RetrieveBounty(uuid interface{}) *gomock.Call {
+func (mr *MockBountyAPIMockRecorder) RetrieveBounty(ctx, uuid interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "RetrieveBounty", reflect.TypeOf((*MockBountyAPI)(nil).RetrieveBounty), uuid)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "RetrieveBounty", reflect.TypeOf((*MockBountyAPI)(nil).RetrieveBounty), ctx, uuid)
 }

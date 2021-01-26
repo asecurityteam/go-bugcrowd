@@ -14,24 +14,19 @@ const (
 
 // BountyAPI is the interface used for mocking of Bounty API calls
 type BountyAPI interface {
-	GetBounties(ctx context.Context, requestConfig GetBountiesRequestConfig) (*http.Response, *GetBountiesResponse, error)
+	GetBounties(ctx context.Context, requestConfig *GetBountiesOptions) (*http.Response, *GetBountiesResponse, error)
 	RetrieveBounty(ctx context.Context, uuid string) (*http.Response, *RetrieveBountyResponse, error)
 }
 
-// BountyService test
+// BountyService represents the Bounty Service struct itself and all required objects
 type BountyService struct {
 	client *Client
 }
 
-// GetBountiesRequestConfig test
-type GetBountiesRequestConfig struct {
-	QueryParams GetBountiesRequestQueryParams
-}
-
-// GetBountiesRequestQueryParams test
-type GetBountiesRequestQueryParams struct {
-	Limit  string
-	Offset string
+// GetBountiesOptions represents the URL options available to the GetBounties endpoint
+type GetBountiesOptions struct {
+	Limit  string `url:"limit,omitempty"`
+	Offset string `url:"offset,omitempty"`
 }
 
 // GetBountiesResponse is the wrapper object returned by Bugcrowd in its GetBounty response
@@ -46,7 +41,7 @@ type RetrieveBountyResponse struct {
 
 // TODO : add stringify
 
-// Bounty test
+// Bounty represents the information provided about a Bugcrowd Bounty
 type Bounty struct {
 	UUID                    *string             `json:"uuid,omitempty"`
 	BountyType              *string             `json:"bountytype,omitempty"`
@@ -77,18 +72,13 @@ type Organization struct {
 }
 
 // GetBounties retrieves all bounty information from Bugcrowd that the you have access
-func (b *BountyService) GetBounties(ctx context.Context, requestConfig GetBountiesRequestConfig) (*http.Response, *GetBountiesResponse, error) {
-	u, _ := url.Parse(b.client.BaseURL.String())
-	u.Path = path.Join(u.Path, commonBountiesEndpoint)
+func (b *BountyService) GetBounties(ctx context.Context, requestOptions *GetBountiesOptions) (*http.Response, *GetBountiesResponse, error) {
+	u, err := buildURL(commonBountiesEndpoint, requestOptions)
+	if err != nil {
+		return nil, nil, err
+	}
 
 	req, err := http.NewRequest(http.MethodGet, u.String(), http.NoBody)
-	req.Header.Set("Content-Type", "application/json")
-	req.Header.Set("Accept", bugcrowdJSONAccept)
-
-	q := req.URL.Query()
-	q.Add("limit", requestConfig.QueryParams.Limit)
-	q.Add("offset", requestConfig.QueryParams.Offset)
-	req.URL.RawQuery = q.Encode()
 
 	bounties := new(GetBountiesResponse)
 	resp, err := b.client.Do(ctx, req, bounties)

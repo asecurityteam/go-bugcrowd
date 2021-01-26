@@ -95,7 +95,7 @@ func TestGetBounties(t *testing.T) {
 			ctx := context.Background()
 			mockRT.EXPECT().RoundTrip(gomock.Any()).Return(tt.response, tt.responseErr)
 
-			_, _, err := bountyService.GetBounties(ctx, GetBountiesRequestConfig{})
+			_, _, err := bountyService.GetBounties(ctx, &GetBountiesOptions{})
 			if tt.expectErr {
 				require.Error(t, err)
 				return

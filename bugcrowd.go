@@ -7,6 +7,10 @@ import (
 	"io"
 	"net/http"
 	"net/url"
+	"path"
+	reflect "reflect"
+
+	"github.com/google/go-querystring/query"
 )
 
 const (
@@ -48,12 +52,15 @@ func NewClient(auth BasicAuth) (*Client, error) {
 	return c, nil
 }
 
-// Do test
+// Do executes the passed in request and sets default headers to the request
 func (c *Client) Do(ctx context.Context, r *http.Request, b interface{}) (*http.Response, error) {
 	if ctx == nil {
 		return nil, errors.New("must pass a non-nil context")
 	}
 	r = r.WithContext(ctx)
+
+	r.Header.Set("Content-Type", "application/json")
+	r.Header.Set("Accept", bugcrowdJSONAccept)
 
 	resp, err := c.http.Do(r)
 	if err != nil {
@@ -83,4 +90,27 @@ func (c *Client) Do(ctx context.Context, r *http.Request, b interface{}) (*http.
 	}
 
 	return resp, err
+}
+
+// buildURL adds the parameters passed in as options. This method was inspired by Google's
+// addOptions() in the go-github library (https://github.com/google/go-github)
+func buildURL(p string, opts interface{}) (*url.URL, error) {
+	u, err := url.Parse(baseURL)
+	if err != nil {
+		return u, err
+	}
+	u.Path = path.Join(u.Path, p)
+
+	v := reflect.ValueOf(opts)
+	if v.Kind() == reflect.Ptr && v.IsNil() {
+		return nil, nil
+	}
+
+	qs, err := query.Values(opts)
+	if err != nil {
+		return u, err
+	}
+
+	u.RawQuery = qs.Encode()
+	return u, nil
 }
