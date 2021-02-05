@@ -31,16 +31,16 @@ type GetSubmissionsResponse struct {
 
 // Submission represents the information provided about a Bugcrowd Bounty
 type Submission struct {
-	BountyCode           *string           `json:"bounty_code,omitempty"`
-	BugURL               *string           `json:"bug_url,omitempty"`
-	Caption              *string           `json:"caption,omitempty"`
-	CustomFields         map[string]string `json:"custom_fields,omitempty"`
-	CVSSString           *CVSSObject       `json:"cvss_string,omitempty"`
-	DescriptionMarkdown  *string           `json:"description_markdown,omitempty"`
-	ExtraInfoMarkdown    *string           `json:"extra_info_markdown,omitempty"`
-	FileAttachmentsCount *int              `json:"file_attachments_count,omitempty"`
-	HTTPRequest          *string           `json:"http_request,omitempty"`
-	// Identity                       *bool             `json:"identity,omitempty"`
+	BountyCode                     *string           `json:"bounty_code,omitempty"`
+	BugURL                         *string           `json:"bug_url,omitempty"`
+	Caption                        *string           `json:"caption,omitempty"`
+	CustomFields                   map[string]string `json:"custom_fields,omitempty"`
+	CVSSString                     *CVSSObject       `json:"cvss_string,omitempty"`
+	DescriptionMarkdown            *string           `json:"description_markdown,omitempty"`
+	ExtraInfoMarkdown              *string           `json:"extra_info_markdown,omitempty"`
+	FileAttachmentsCount           *int              `json:"file_attachments_count,omitempty"`
+	HTTPRequest                    *string           `json:"http_request,omitempty"`
+	Identity                       *Identity         `json:"identity,omitempty"`
 	Priority                       *int              `json:"priority,omitempty"`
 	RemediationAdviceMarkdown      *string           `json:"remediation_advice_markdown,omitempty"`
 	ReferenceNumber                *string           `json:"reference_number,omitempty"`
@@ -78,6 +78,13 @@ type MonetaryReward struct {
 type Target struct {
 	Name             *string `json:"name,omitempty"`
 	BusinessPriority *string `json:"business_priority,omitempty"`
+}
+
+// Identity test
+type Identity struct {
+	UUID *string `json:"uuid,omitempty"`
+	Name *string `json:"name,omitempty"`
+	Type *string `json:"type,omitempty"`
 }
 
 // GetSubmissions retrieves all bounty information from Bugcrowd that the you have access
