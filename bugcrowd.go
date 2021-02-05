@@ -24,6 +24,7 @@ type Client struct {
 	BaseURL          *url.URL
 	Bounty           BountyAPI
 	CustomFieldLabel CustomFieldLabelAPI
+	Submission       SubmissionAPI
 
 	http *http.Client
 }
@@ -48,6 +49,7 @@ func NewClient(auth BasicAuth, rt http.RoundTripper) (*Client, error) {
 
 	c.Bounty = &BountyService{client: c}
 	c.CustomFieldLabel = &CustomFieldLabelService{client: c}
+	c.Submission = &SubmissionService{client: c}
 
 	return c, nil
 }
