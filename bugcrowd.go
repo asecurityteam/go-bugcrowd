@@ -7,6 +7,10 @@ import (
 	"io"
 	"net/http"
 	"net/url"
+	"path"
+	reflect "reflect"
+
+	"github.com/google/go-querystring/query"
 )
 
 const (
@@ -31,7 +35,7 @@ type BasicAuth struct {
 }
 
 // NewClient generates a new client to make outgoing calls to Bugcrowd
-func NewClient(auth BasicAuth) (*Client, error) {
+func NewClient(auth BasicAuth, rt http.RoundTripper) (*Client, error) {
 	parsedBaseURL, err := url.Parse(baseURL)
 	if err != nil {
 		return nil, err
@@ -39,7 +43,7 @@ func NewClient(auth BasicAuth) (*Client, error) {
 
 	c := &Client{
 		BaseURL: parsedBaseURL,
-		http:    NewTransport(auth),
+		http:    NewTransport(auth, rt),
 	}
 
 	c.Bounty = &BountyService{client: c}
@@ -48,7 +52,15 @@ func NewClient(auth BasicAuth) (*Client, error) {
 	return c, nil
 }
 
-// Do test
+// DoWithDefault wraps a call around Do that adds the default Bugcrowd headers
+func (c *Client) DoWithDefault(ctx context.Context, r *http.Request, b interface{}) (*http.Response, error) {
+	r.Header.Set("Content-Type", "application/json")
+	r.Header.Set("Accept", bugcrowdJSONAccept)
+
+	return c.Do(ctx, r, b)
+}
+
+// Do executes the passed in request and sets default headers to the request
 func (c *Client) Do(ctx context.Context, r *http.Request, b interface{}) (*http.Response, error) {
 	if ctx == nil {
 		return nil, errors.New("must pass a non-nil context")
@@ -83,4 +95,27 @@ func (c *Client) Do(ctx context.Context, r *http.Request, b interface{}) (*http.
 	}
 
 	return resp, err
+}
+
+// buildURL adds the parameters passed in as options. This method was inspired by Google's
+// addOptions() in the go-github library (https://github.com/google/go-github)
+func buildURL(p string, opts interface{}) (*url.URL, error) {
+	u, err := url.Parse(baseURL)
+	if err != nil {
+		return u, err
+	}
+	u.Path = path.Join(u.Path, p)
+
+	v := reflect.ValueOf(opts)
+	if v.Kind() == reflect.Ptr && v.IsNil() {
+		return nil, nil
+	}
+
+	qs, err := query.Values(opts)
+	if err != nil {
+		return u, err
+	}
+
+	u.RawQuery = qs.Encode()
+	return u, nil
 }

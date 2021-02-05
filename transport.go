@@ -16,11 +16,15 @@ func (st *Transport) RoundTrip(r *http.Request) (*http.Response, error) {
 }
 
 // NewTransport placeholder
-func NewTransport(auth BasicAuth) *http.Client {
+func NewTransport(auth BasicAuth, rt http.RoundTripper) *http.Client {
+	if rt == nil {
+		rt = http.DefaultTransport
+	}
+
 	return &http.Client{
 		Transport: &Transport{
 			Authorization:     auth,
-			OriginalTransport: http.DefaultTransport,
+			OriginalTransport: rt,
 		},
 	}
 }

@@ -9,5 +9,5 @@ func TestNewClient(t *testing.T) {
 		Password: "dgd",
 	}
 
-	NewClient(auth)
+	NewClient(auth, nil)
 }
