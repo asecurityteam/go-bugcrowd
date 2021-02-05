@@ -35,7 +35,7 @@ type BasicAuth struct {
 }
 
 // NewClient generates a new client to make outgoing calls to Bugcrowd
-func NewClient(auth BasicAuth) (*Client, error) {
+func NewClient(auth BasicAuth, rt http.RoundTripper) (*Client, error) {
 	parsedBaseURL, err := url.Parse(baseURL)
 	if err != nil {
 		return nil, err
@@ -43,7 +43,7 @@ func NewClient(auth BasicAuth) (*Client, error) {
 
 	c := &Client{
 		BaseURL: parsedBaseURL,
-		http:    NewTransport(auth),
+		http:    NewTransport(auth, rt),
 	}
 
 	c.Bounty = &BountyService{client: c}
