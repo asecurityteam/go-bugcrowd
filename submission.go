@@ -8,14 +8,18 @@ import (
 )
 
 const (
-	commonsubmissionsEndpoint         = "/submissions"
-	getSubmissionsEndpoint            = "/bounties/%s/submissions"
-	fetchAndUpdateSubmissionsEndpoint = "/submissions/%s"
+	commonsubmissionsEndpoint            = "/submissions"
+	getSubmissionsEndpoint               = "/bounties/%s/submissions"
+	retrieveAndUpdateSubmissionsEndpoint = "/submissions/%s"
+	transitionSubmissionEndpoint         = "/submissions/%s/transition"
 )
 
 // SubmissionAPI is the interface used for mocking of Bounty API calls
 type SubmissionAPI interface {
 	GetSubmissions(ctx context.Context, uuid string, requestOptions *GetSubmissionsOptions) (*http.Response, *GetSubmissionsResponse, error)
+	RetrieveSubmission(ctx context.Context, uuid string) (*http.Response, *RetrieveAndUpdateSubmissionResponse, error)
+	UpdateSubmission(ctx context.Context, uuid string, update *UpdateSubmissionRequest) (*http.Response, *RetrieveAndUpdateSubmissionResponse, error)
+	TransitionSubmission(ctx context.Context, uuid string, transitionrequest *TransitionSubmissionRequest) (*http.Response, error)
 }
 
 // SubmissionService represents the Submission Service struct itself and all required objects
@@ -26,6 +30,27 @@ type SubmissionService struct {
 // GetSubmissionsResponse is the wrapper object returned by Bugcrowd in its GetBounty response
 type GetSubmissionsResponse struct {
 	Submissions []*Submission `json:"submissions,omitempty"`
+}
+
+// RetrieveAndUpdateSubmissionResponse is the wrapper object returned by Bugcrowd in its GetBounty response
+type RetrieveAndUpdateSubmissionResponse struct {
+	Submission *Submission `json:"submission,omitempty"`
+}
+
+// UpdateSubmissionRequest placeholder
+type UpdateSubmissionRequest struct {
+	Submission CustomFieldSubmissionUpdate `json:"submission,omitempty"`
+}
+
+// CustomFieldSubmissionUpdate placeholder
+type CustomFieldSubmissionUpdate struct {
+	CustomFields map[string]string `json:"custom_fields,omitempty"`
+}
+
+// TransitionSubmissionRequest transitions submissions to set substate
+type TransitionSubmissionRequest struct {
+	SubState    string `json:"substate,omitempty"`
+	DuplicateOf string `json:"duplicate_of,omitempty"`
 }
 
 // GetSubmissionsOptions represents the URL options available to the GetSubmissions endpoint
@@ -51,7 +76,7 @@ type GetSubmissionsOptions struct {
 	Limit      string `url:"limit,omitempty"`
 }
 
-// Submission represents the information provided about a Bugcrowd Bounty
+// Submission represents the information provided about a Bugcrowd submission
 type Submission struct {
 	BountyCode                     *string           `json:"bounty_code,omitempty"`
 	BugURL                         *string           `json:"bug_url,omitempty"`
@@ -118,7 +143,7 @@ func (s *SubmissionService) GetSubmissions(ctx context.Context, uuid string, req
 		return nil, nil, err
 	}
 
-	req, err := http.NewRequest(http.MethodGet, u.String(), http.NoBody)
+	req, err := s.client.NewRequest(http.MethodGet, u.String(), http.NoBody)
 
 	submissions := new(GetSubmissionsResponse)
 	resp, err := s.client.DoWithDefault(ctx, req, submissions)
@@ -127,4 +152,63 @@ func (s *SubmissionService) GetSubmissions(ctx context.Context, uuid string, req
 	}
 
 	return resp, submissions, nil
+}
+
+// RetrieveSubmission retrieves all bounty information from Bugcrowd that the you have access
+func (s *SubmissionService) RetrieveSubmission(ctx context.Context, uuid string) (*http.Response, *RetrieveAndUpdateSubmissionResponse, error) {
+	endPath := fmt.Sprintf(retrieveAndUpdateSubmissionsEndpoint, uuid)
+
+	u, err := buildURL(endPath, nil)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	req, err := s.client.NewRequest(http.MethodGet, u.String(), http.NoBody)
+
+	submission := new(RetrieveAndUpdateSubmissionResponse)
+	resp, err := s.client.DoWithDefault(ctx, req, submission)
+	if err != nil {
+		return resp, &RetrieveAndUpdateSubmissionResponse{}, err
+	}
+
+	return resp, submission, nil
+}
+
+// UpdateSubmission retrieves all bounty information from Bugcrowd that the you have access
+func (s *SubmissionService) UpdateSubmission(ctx context.Context, uuid string, update *UpdateSubmissionRequest) (*http.Response, *RetrieveAndUpdateSubmissionResponse, error) {
+	endPath := fmt.Sprintf(retrieveAndUpdateSubmissionsEndpoint, uuid)
+
+	u, err := buildURL(endPath, nil)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	req, err := s.client.NewRequest(http.MethodPut, u.String(), update)
+
+	submission := new(RetrieveAndUpdateSubmissionResponse)
+	resp, err := s.client.DoWithDefault(ctx, req, submission)
+	if err != nil {
+		return resp, &RetrieveAndUpdateSubmissionResponse{}, err
+	}
+
+	return resp, submission, nil
+}
+
+// TransitionSubmission retrieves all bounty information from Bugcrowd that the you have access
+func (s *SubmissionService) TransitionSubmission(ctx context.Context, uuid string, transitionrequest *TransitionSubmissionRequest) (*http.Response, error) {
+	endPath := fmt.Sprintf(transitionSubmissionEndpoint, uuid)
+
+	u, err := buildURL(endPath, nil)
+	if err != nil {
+		return nil, err
+	}
+
+	req, err := s.client.NewRequest(http.MethodPost, u.String(), transitionrequest)
+
+	resp, err := s.client.DoWithDefault(ctx, req, nil)
+	if err != nil {
+		return resp, err
+	}
+
+	return resp, nil
 }
