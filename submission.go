@@ -15,8 +15,7 @@ const (
 
 // SubmissionAPI is the interface used for mocking of Bounty API calls
 type SubmissionAPI interface {
-	GetSubmissions(ctx context.Context, uuid string) (*http.Response, *GetSubmissionsResponse, error)
-	// RetrieveBounty(ctx context.Context, uuid string) (*http.Response, *RetrieveBountyResponse, error)
+	GetSubmissions(ctx context.Context, uuid string, requestOptions *GetSubmissionsOptions) (*http.Response, *GetSubmissionsResponse, error)
 }
 
 // SubmissionService represents the Submission Service struct itself and all required objects
@@ -27,6 +26,29 @@ type SubmissionService struct {
 // GetSubmissionsResponse is the wrapper object returned by Bugcrowd in its GetBounty response
 type GetSubmissionsResponse struct {
 	Submissions []*Submission `json:"submissions,omitempty"`
+}
+
+// GetSubmissionsOptions represents the URL options available to the GetSubmissions endpoint
+type GetSubmissionsOptions struct {
+	Search     string `url:"search,omitempty"`
+	Assignment string `url:"assignment,omitempty"`
+	Duplicate  string `url:"duplicate,omitempty"`
+	Severity   string `url:"severity,omitempty"`
+	Target     string `url:"target,omitempty"`
+	Points     string `url:"points,omitempty"`
+	Payments   string `url:"payments,omitempty"`
+	Researcher string `url:"researcher,omitempty"`
+	Source     string `url:"source,omitempty"`
+	TargetType string `url:"target_type,omitempty"`
+	BlockedBy  string `url:"blocked_by,omitempty"`
+	Retest     string `url:"retest,omitempty"`
+	Substate   string `url:"substate,omitempty"`
+	Submitted  string `url:"submitted,omitempty"`
+	VRT        string `url:"vrt,omitempty"`
+	Filter     string `url:"filter,omitempty"`
+	Sort       string `url:"sort,omitempty"`
+	Offset     string `url:"offset,omitempty"`
+	Limit      string `url:"limit,omitempty"`
 }
 
 // Submission represents the information provided about a Bugcrowd Bounty
@@ -88,7 +110,7 @@ type Identity struct {
 }
 
 // GetSubmissions retrieves all bounty information from Bugcrowd that the you have access
-func (s *SubmissionService) GetSubmissions(ctx context.Context, uuid string) (*http.Response, *GetSubmissionsResponse, error) {
+func (s *SubmissionService) GetSubmissions(ctx context.Context, uuid string, requestOptions *GetSubmissionsOptions) (*http.Response, *GetSubmissionsResponse, error) {
 	endPath := fmt.Sprintf(getSubmissionsEndpoint, uuid)
 
 	u, err := buildURL(endPath, nil)
