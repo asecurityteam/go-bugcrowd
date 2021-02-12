@@ -79,6 +79,9 @@ func (b *BountyService) GetBounties(ctx context.Context, requestOptions *GetBoun
 	}
 
 	req, err := http.NewRequest(http.MethodGet, u.String(), http.NoBody)
+	if err != nil {
+		return nil, nil, err
+	}
 
 	bounties := new(GetBountiesResponse)
 	resp, err := b.client.DoWithDefault(ctx, req, bounties)

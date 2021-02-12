@@ -67,7 +67,7 @@ func (c *Client) NewRequest(method, urlStr string, body interface{}) (*http.Requ
 		buf = &bytes.Buffer{}
 		enc := json.NewEncoder(buf)
 		enc.SetEscapeHTML(false)
-		err := enc.Encode(body)
+		err = enc.Encode(body)
 		if err != nil {
 			return nil, err
 		}
@@ -98,7 +98,7 @@ func (c *Client) Do(ctx context.Context, r *http.Request, b interface{}) (*http.
 
 	resp, err := c.http.Do(r)
 	if err != nil {
-		// TODO : check if context error ocurred
+		// TODO : check if context error occurred
 		return nil, err
 	}
 
@@ -111,7 +111,9 @@ func (c *Client) Do(ctx context.Context, r *http.Request, b interface{}) (*http.
 	// check if b is null as interface as nullable when passed
 	if b != nil {
 		if w, ok := b.(io.Writer); ok {
-			io.Copy(w, resp.Body)
+			if _, cerr := io.Copy(w, resp.Body); err != nil {
+				err = cerr
+			}
 		} else {
 			decErr := json.NewDecoder(resp.Body).Decode(b)
 			if decErr == io.EOF {

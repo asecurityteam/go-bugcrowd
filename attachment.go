@@ -45,6 +45,9 @@ func (s *AttachmentService) ViewCommentAttachments(ctx context.Context, submissi
 	}
 
 	req, err := s.client.NewRequest(http.MethodGet, u.String(), http.NoBody)
+	if err != nil {
+		return nil, nil, err
+	}
 
 	attachments := new(ViewAttachmentsResponse)
 	resp, err := s.client.DoWithDefault(ctx, req, attachments)
@@ -57,7 +60,7 @@ func (s *AttachmentService) ViewCommentAttachments(ctx context.Context, submissi
 
 // ViewSubmissionAttachments retrieves all bounty information from Bugcrowd that the you have access
 func (s *AttachmentService) ViewSubmissionAttachments(ctx context.Context, uuid string) (*http.Response, *ViewAttachmentsResponse, error) {
-	endPath := fmt.Sprintf(retrieveAndUpdateSubmissionsEndpoint, uuid)
+	endPath := fmt.Sprintf(attachmentsEndpoint, uuid)
 
 	u, err := buildURL(endPath, nil)
 	if err != nil {
@@ -65,6 +68,9 @@ func (s *AttachmentService) ViewSubmissionAttachments(ctx context.Context, uuid 
 	}
 
 	req, err := s.client.NewRequest(http.MethodGet, u.String(), http.NoBody)
+	if err != nil {
+		return nil, nil, err
+	}
 
 	attachments := new(ViewAttachmentsResponse)
 	resp, err := s.client.DoWithDefault(ctx, req, attachments)

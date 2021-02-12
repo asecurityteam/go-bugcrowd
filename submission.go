@@ -8,7 +8,6 @@ import (
 )
 
 const (
-	commonsubmissionsEndpoint            = "/submissions"
 	getSubmissionsEndpoint               = "/bounties/%s/submissions"
 	retrieveAndUpdateSubmissionsEndpoint = "/submissions/%s"
 	transitionSubmissionEndpoint         = "/submissions/%s/transition"
@@ -144,6 +143,9 @@ func (s *SubmissionService) GetSubmissions(ctx context.Context, uuid string, req
 	}
 
 	req, err := s.client.NewRequest(http.MethodGet, u.String(), http.NoBody)
+	if err != nil {
+		return nil, nil, err
+	}
 
 	submissions := new(GetSubmissionsResponse)
 	resp, err := s.client.DoWithDefault(ctx, req, submissions)
@@ -164,6 +166,9 @@ func (s *SubmissionService) RetrieveSubmission(ctx context.Context, uuid string)
 	}
 
 	req, err := s.client.NewRequest(http.MethodGet, u.String(), http.NoBody)
+	if err != nil {
+		return nil, nil, err
+	}
 
 	submission := new(RetrieveAndUpdateSubmissionResponse)
 	resp, err := s.client.DoWithDefault(ctx, req, submission)
@@ -184,6 +189,9 @@ func (s *SubmissionService) UpdateSubmission(ctx context.Context, uuid string, u
 	}
 
 	req, err := s.client.NewRequest(http.MethodPut, u.String(), update)
+	if err != nil {
+		return nil, nil, err
+	}
 
 	submission := new(RetrieveAndUpdateSubmissionResponse)
 	resp, err := s.client.DoWithDefault(ctx, req, submission)
@@ -204,6 +212,9 @@ func (s *SubmissionService) TransitionSubmission(ctx context.Context, uuid strin
 	}
 
 	req, err := s.client.NewRequest(http.MethodPost, u.String(), transitionrequest)
+	if err != nil {
+		return nil, err
+	}
 
 	resp, err := s.client.DoWithDefault(ctx, req, nil)
 	if err != nil {
