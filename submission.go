@@ -113,7 +113,7 @@ type Identity struct {
 func (s *SubmissionService) GetSubmissions(ctx context.Context, uuid string, requestOptions *GetSubmissionsOptions) (*http.Response, *GetSubmissionsResponse, error) {
 	endPath := fmt.Sprintf(getSubmissionsEndpoint, uuid)
 
-	u, err := buildURL(endPath, nil)
+	u, err := buildURL(endPath, requestOptions)
 	if err != nil {
 		return nil, nil, err
 	}
