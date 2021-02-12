@@ -43,26 +43,26 @@ type RetrieveBountyResponse struct {
 
 // Bounty represents the information provided about a Bugcrowd Bounty
 type Bounty struct {
-	UUID                    *string             `json:"uuid,omitempty"`
-	BountyType              *string             `json:"bountytype,omitempty"`
-	Code                    *string             `json:"code,omitempty"`
-	CustomFieldLabels       *[]CustomFieldLabel `json:"custom_field_labels,omitempty"`
-	DescriptionMarkdown     *string             `json:"description_markdown,omitempty"`
-	Demo                    *bool               `json:"demo,omitempty"`
-	EndsAt                  *time.Time          `json:"ends_at,omitempty"`
-	HighRewards             *int                `json:"high_rewards,omitempty"`
-	LowRewards              *int                `json:"low_rewards,omitempty"`
-	Participation           *string             `json:"participation,omitempty"`
-	PointsOnly              *bool               `json:"points_only,omitempty"`
-	StartsAt                *time.Time          `json:"starts_at,omitempty"`
-	TargetsOverviewMarkdown *string             `json:"targets_overview_markdown,omitempty"`
-	Tagline                 *string             `json:"tagline,omitempty"`
-	TotalPrizePool          *string             `json:"total_prize_pool,omitempty"`
-	RemainingPrizePool      *string             `json:"remaining_prize_pool,omitempty"`
-	Trial                   *bool               `json:"trial,omitempty"`
-	Status                  *string             `json:"status,omitempty"`
-	ServiceLevel            *string             `json:"service_level,omitempty"`
-	Organization            *Organization       `json:"organization,omitempty"`
+	UUID                    string             `json:"uuid,omitempty"`
+	BountyType              string             `json:"bountytype,omitempty"`
+	Code                    string             `json:"code,omitempty"`
+	CustomFieldLabels       []CustomFieldLabel `json:"custom_field_labels,omitempty"`
+	DescriptionMarkdown     string             `json:"description_markdown,omitempty"`
+	Demo                    bool               `json:"demo,omitempty"`
+	EndsAt                  time.Time          `json:"ends_at,omitempty"`
+	HighRewards             int                `json:"high_rewards,omitempty"`
+	LowRewards              int                `json:"low_rewards,omitempty"`
+	Participation           string             `json:"participation,omitempty"`
+	PointsOnly              bool               `json:"points_only,omitempty"`
+	StartsAt                time.Time          `json:"starts_at,omitempty"`
+	TargetsOverviewMarkdown string             `json:"targets_overview_markdown,omitempty"`
+	Tagline                 string             `json:"tagline,omitempty"`
+	TotalPrizePool          string             `json:"total_prize_pool,omitempty"`
+	RemainingPrizePool      string             `json:"remaining_prize_pool,omitempty"`
+	Trial                   bool               `json:"trial,omitempty"`
+	Status                  string             `json:"status,omitempty"`
+	ServiceLevel            string             `json:"service_level,omitempty"`
+	Organization            Organization       `json:"organization,omitempty"`
 }
 
 // Organization represents the organization a given bounty belongs.
