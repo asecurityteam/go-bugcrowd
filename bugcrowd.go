@@ -5,13 +5,11 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
-	"fmt"
 	"io"
 	"net/http"
 	"net/url"
 	"path"
 	reflect "reflect"
-	"strings"
 
 	"github.com/google/go-querystring/query"
 )
@@ -59,9 +57,6 @@ func NewClient(auth BasicAuth, rt http.RoundTripper) (*Client, error) {
 
 // NewRequest placeholder
 func (c *Client) NewRequest(method, urlStr string, body interface{}) (*http.Request, error) {
-	if !strings.HasSuffix(c.BaseURL.Path, "/") {
-		return nil, fmt.Errorf("BaseURL must have a trailing slash, but %q does not", c.BaseURL)
-	}
 	u, err := c.BaseURL.Parse(urlStr)
 	if err != nil {
 		return nil, err
