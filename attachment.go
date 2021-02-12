@@ -7,12 +7,14 @@ import (
 )
 
 const (
-	attachmentsEndpoint = "/submissions/%s/file_attachments"
+	commentAttachmentsEndpoint = "/submissions/%s/comments/%s/file_attachments"
+	attachmentsEndpoint        = "/submissions/%s/file_attachments"
 )
 
 // AttachmentAPI is the interface used for mocking of Bounty API calls
 type AttachmentAPI interface {
-	ViewSubmissionAttachments(ctx context.Context, uuid string) (*http.Response, *GetSubmissionsResponse, error)
+	ViewCommentAttachments(ctx context.Context, uuid string) (*http.Response, *ViewAttachmentsResponse, error)
+	ViewSubmissionAttachments(ctx context.Context, uuid string) (*http.Response, *ViewAttachmentsResponse, error)
 }
 
 // AttachmentService represents the Attachment Service struct itself and all required objects
@@ -20,8 +22,8 @@ type AttachmentService struct {
 	client *Client
 }
 
-// ViewSubmissionAttachmentsResponse represents the response expected from the GetAttachments API
-type ViewSubmissionAttachmentsResponse struct {
+// ViewAttachmentsResponse represents the response expected from the GetAttachments API
+type ViewAttachmentsResponse struct {
 	FileAttachments []Attachment `json:"file_attachments,omitempty"`
 }
 
@@ -33,8 +35,28 @@ type Attachment struct {
 	S3SignedURL string `json:"s3_signed_url,omitempty"`
 }
 
-// RetrieveSubmission retrieves all bounty information from Bugcrowd that the you have access
-func (s *AttachmentService) RetrieveSubmission(ctx context.Context, uuid string) (*http.Response, *ViewSubmissionAttachmentsResponse, error) {
+// ViewCommentAttachments retrieves all bounty information from Bugcrowd that the you have access
+func (s *AttachmentService) ViewCommentAttachments(ctx context.Context, submissionUUID, commentUUID string) (*http.Response, *ViewAttachmentsResponse, error) {
+	endPath := fmt.Sprintf(commentAttachmentsEndpoint, submissionUUID, commentUUID)
+
+	u, err := buildURL(endPath, nil)
+	if err != nil {
+		return nil, nil, err
+	}
+
+	req, err := s.client.NewRequest(http.MethodGet, u.String(), http.NoBody)
+
+	attachments := new(ViewAttachmentsResponse)
+	resp, err := s.client.DoWithDefault(ctx, req, attachments)
+	if err != nil {
+		return resp, &ViewAttachmentsResponse{}, err
+	}
+
+	return resp, attachments, nil
+}
+
+// ViewSubmissionAttachments retrieves all bounty information from Bugcrowd that the you have access
+func (s *AttachmentService) ViewSubmissionAttachments(ctx context.Context, uuid string) (*http.Response, *ViewAttachmentsResponse, error) {
 	endPath := fmt.Sprintf(retrieveAndUpdateSubmissionsEndpoint, uuid)
 
 	u, err := buildURL(endPath, nil)
@@ -44,10 +66,10 @@ func (s *AttachmentService) RetrieveSubmission(ctx context.Context, uuid string)
 
 	req, err := s.client.NewRequest(http.MethodGet, u.String(), http.NoBody)
 
-	attachments := new(ViewSubmissionAttachmentsResponse)
+	attachments := new(ViewAttachmentsResponse)
 	resp, err := s.client.DoWithDefault(ctx, req, attachments)
 	if err != nil {
-		return resp, &ViewSubmissionAttachmentsResponse{}, err
+		return resp, &ViewAttachmentsResponse{}, err
 	}
 
 	return resp, attachments, nil
