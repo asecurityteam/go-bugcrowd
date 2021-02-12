@@ -78,7 +78,7 @@ func (b *BountyService) GetBounties(ctx context.Context, requestOptions *GetBoun
 		return nil, nil, err
 	}
 
-	req, err := http.NewRequest(http.MethodGet, u.String(), http.NoBody)
+	req, err := b.client.NewRequest(http.MethodGet, u.String(), http.NoBody)
 	if err != nil {
 		return nil, nil, err
 	}
@@ -98,7 +98,10 @@ func (b *BountyService) RetrieveBounty(ctx context.Context, uuid string) (*http.
 	u, _ := url.Parse(b.client.BaseURL.String())
 	u.Path = path.Join(u.Path, commonBountiesEndpoint, uuid)
 
-	req, _ := http.NewRequest(http.MethodGet, u.String(), http.NoBody)
+	req, err := b.client.NewRequest(http.MethodGet, u.String(), http.NoBody)
+	if err != nil {
+		return nil, nil, err
+	}
 
 	bounty := new(RetrieveBountyResponse)
 	resp, err := b.client.DoWithDefault(ctx, req, bounty)
